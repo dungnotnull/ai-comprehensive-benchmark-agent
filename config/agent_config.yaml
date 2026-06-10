@@ -1,0 +1,104 @@
+# ai-benchmark-agent — Runtime Configuration
+
+agent:
+  name: "ai-benchmark-agent"
+  version: "1.0.0"
+  description: "Transparent LLM proxy with 8-metric evaluation layer"
+
+server:
+  proxy_host: "0.0.0.0"
+  proxy_port: 8022
+  log_level: "info"
+  max_judge_queue_size: 500
+
+providers:
+  anthropic:
+    base_url: "https://api.anthropic.com"
+    api_version: "2023-06-01"
+  openai:
+    base_url: "https://api.openai.com"
+  ollama:
+    base_url: "http://localhost:11434"
+
+llm:
+  primary_provider: "claude"
+  fallback_order: ["claude", "openai", "ollama"]
+  judge_model: "claude-sonnet-4-6"          # used for quality judging (cost-efficient)
+  reasoning_model: "claude-opus-4-8"         # used for synthesis/recommendations
+  openai_model: "gpt-4o-mini"
+  ollama_model: "llama3"
+  max_judge_tokens: 200
+  max_synthesis_tokens: 300
+  judge_temperature: 0.0
+  synthesis_temperature: 0.3
+
+hf_models:
+  minilm:
+    model_id: "sentence-transformers/all-MiniLM-L6-v2"
+    task: "task_classification"
+    dim: 384
+  bge_large:
+    model_id: "BAAI/bge-large-en-v1.5"
+    task: "session_clustering"
+    dim: 1024
+  idle_unload_seconds: 600
+  cache_dir: "./models"
+
+metrics:
+  correction_keywords:
+    - "wrong"
+    - "incorrect"
+    - "that's not"
+    - "not right"
+    - "fix this"
+    - "redo"
+    - "try again"
+    - "not what i"
+    - "you missed"
+    - "please redo"
+    - "that doesn't"
+    - "revise"
+    - "rethink"
+    - "change that"
+    - "no, actually"
+    - "not correct"
+    - "mistake"
+    - "you're wrong"
+    - "please fix"
+  judge_async: true    # run judge calls in background (never block proxy response)
+  judge_enabled: true
+
+benchmark:
+  helm_min_calls: 10       # minimum calls before computing HELM score
+  elo_initial_rating: 1000.0
+  elo_k_factor: 32.0
+  elo_enabled: true
+
+reporting:
+  daily_report_hour: 8      # 08:00 local time
+  report_days: 30
+  output_dir: "./data"
+  json_log_enabled: true
+  markdown_report_enabled: true
+
+knowledge_updater:
+  schedule: "weekly"         # Sunday 02:00
+  top_n: 10
+  recency_window_days: 90
+  arxiv_categories: ["cs.AI", "cs.LG"]
+  arxiv_max_results: 10
+
+memory:
+  db_path: "data/benchmark.db"
+  wal_mode: true
+  connection_timeout: 30
+  max_connections: 10
+
+data:
+  output_dir: "data"
+
+quality_gates:
+  min_latency_ms: 0.1         # drop calls with latency <= this
+  min_calls_for_helm: 10
+  min_calls_for_comparison: 5
+  quality_score_fallback: 3.0

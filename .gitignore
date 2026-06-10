@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment / secrets
+.env
+config/.env
+
+# Data (runtime only)
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Downloaded models
+models/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test / Coverage
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Docker overrides
+docker/*.env
+
+# Claude Code / CodeGraph
+.claude/
+.codegraph/
+
+# Plans / specs (development artifacts)
+docs/superpowers/

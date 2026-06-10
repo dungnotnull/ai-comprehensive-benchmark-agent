@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-benchmark-agent"
+version = "1.0.0"
+description = "Transparent LLM proxy with 8-metric evaluation layer for production model comparison"
+readme = "CLAUDE.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "ai-benchmark-agent contributors"},
+]
+keywords = ["llm", "benchmark", "evaluation", "proxy", "ai", "metrics"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "httpx>=0.28.0",
+    "aiohttp>=3.11.0",
+    "click>=8.1.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
+    "numpy>=1.26.0",
+    "tiktoken>=0.8.0",
+    "apscheduler>=3.10.0",
+]
+
+[project.optional-dependencies]
+llm = [
+    "anthropic>=0.43.0",
+    "openai>=1.58.0",
+]
+ml = [
+    "sentence-transformers>=3.3.0",
+    "transformers>=4.47.0",
+    "torch>=2.4.0",
+]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+]
+all = [
+    "ai-benchmark-agent[llm,ml,dev]",
+]
+
+[project.scripts]
+benchmark-agent = "agent.main:cli"
+
+[tool.setuptools.packages.find]
+include = ["agent*", "tools*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = "test_*.py"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"

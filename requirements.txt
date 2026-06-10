@@ -1,0 +1,31 @@
+# Core
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+httpx==0.28.1
+aiohttp==3.11.10
+click==8.1.8
+pyyaml==6.0.2
+
+# LLM SDKs
+anthropic==0.43.0
+openai==1.58.1
+
+# HuggingFace
+sentence-transformers==3.3.1
+transformers==4.47.1
+torch>=2.4.0
+
+# Data
+numpy==1.26.4
+tiktoken==0.8.0
+
+# Scheduling
+apscheduler==3.10.4
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+pytest-cov==6.0.0
+
+# Utilities
+python-dotenv==1.0.1

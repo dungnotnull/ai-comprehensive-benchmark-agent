@@ -1,0 +1,85 @@
+version: "3.9"
+
+services:
+  benchmark-agent:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: ai-benchmark-agent
+    ports:
+      - "8022:8022"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-sonnet-4-6}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3}
+      - PRIVACY_MODE=${PRIVACY_MODE:-false}
+      - PROXY_PORT=8022
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - BENCHMARK_SCHEDULER=1
+    volumes:
+      - benchmark_data:/app/data
+      - benchmark_models:/app/models
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8022/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      - ollama
+
+  benchmark-agent-gpu:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: ai-benchmark-agent-gpu
+    ports:
+      - "8022:8022"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-sonnet-4-6}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3}
+      - PRIVACY_MODE=${PRIVACY_MODE:-false}
+      - PROXY_PORT=8022
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - BENCHMARK_SCHEDULER=1
+    volumes:
+      - benchmark_data:/app/data
+      - benchmark_models:/app/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    profiles:
+      - gpu
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: benchmark-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - benchmark_ollama_models:/root/.ollama
+    restart: unless-stopped
+    profiles:
+      - ollama
+      - default
+
+volumes:
+  benchmark_data:
+    driver: local
+  benchmark_models:
+    driver: local
+  benchmark_ollama_models:
+    driver: local
